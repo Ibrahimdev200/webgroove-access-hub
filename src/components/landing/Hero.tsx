@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 import { ArrowRight, Shield, Zap, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -54,11 +55,13 @@ export const Hero = () => {
             transition={{ duration: 0.5, delay: 0.3 }}
             className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16"
           >
-            <Button variant="hero" size="xl" className="w-full sm:w-auto">
-              Start Building <ArrowRight className="w-5 h-5 ml-1" />
+            <Button variant="hero" size="xl" className="w-full sm:w-auto" asChild>
+              <Link to="/auth">
+                Start Building <ArrowRight className="w-5 h-5 ml-1" />
+              </Link>
             </Button>
-            <Button variant="hero-outline" size="xl" className="w-full sm:w-auto">
-              Explore Marketplace
+            <Button variant="hero-outline" size="xl" className="w-full sm:w-auto" asChild>
+              <Link to="/auth">Explore Marketplace</Link>
             </Button>
           </motion.div>
 
