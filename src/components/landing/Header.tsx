@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, Zap } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import webgrooveLogo from "@/assets/webgroove-logo.png";
 
 const navItems = [
   { name: "Features", href: "#features" },
@@ -24,11 +25,8 @@ export const Header = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 lg:h-20">
           {/* Logo */}
-          <a href="/" className="flex items-center gap-2">
-            <div className="w-9 h-9 rounded-lg gradient-tau flex items-center justify-center shadow-tau">
-              <Zap className="w-5 h-5 text-tau-foreground" />
-            </div>
-            <span className="text-xl font-bold text-foreground">Webgroove</span>
+          <a href="/" className="flex items-center">
+            <img src={webgrooveLogo} alt="Webgroove" className="h-10 w-auto" />
           </a>
 
           {/* Desktop Navigation */}
