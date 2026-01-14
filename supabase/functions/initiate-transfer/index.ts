@@ -106,7 +106,7 @@ serve(async (req: Request) => {
     if (resend && user.email) {
       try {
         await resend.emails.send({
-          from: "Webgroove <noreply@webgroove.app>",
+          from: "Webgroove <onboarding@resend.dev>",
           to: [user.email],
           subject: "Your Webgroove Transfer Verification Code",
           html: `
