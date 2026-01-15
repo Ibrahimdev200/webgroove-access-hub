@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProfile } from "@/hooks/useProfile";
 import { useWallet } from "@/hooks/useWallet";
+import { NotificationBell } from "@/components/notifications/NotificationBell";
 
 const navItems = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
@@ -54,9 +55,12 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
             </div>
             <span className="font-bold text-foreground">Webgroove</span>
           </Link>
-          <button onClick={() => setSidebarOpen(!sidebarOpen)} className="p-2">
-            {sidebarOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
+          <div className="flex items-center gap-2">
+            <NotificationBell />
+            <button onClick={() => setSidebarOpen(!sidebarOpen)} className="p-2">
+              {sidebarOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            </button>
+          </div>
         </div>
       </div>
 
@@ -68,13 +72,14 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       >
         <div className="flex flex-col h-full">
           {/* Logo */}
-          <div className="p-6 border-b border-border hidden lg:block">
+          <div className="p-6 border-b border-border hidden lg:flex items-center justify-between">
             <Link to="/" className="flex items-center gap-2">
               <div className="w-9 h-9 rounded-lg gradient-tau flex items-center justify-center shadow-tau">
                 <Zap className="w-5 h-5 text-tau-foreground" />
               </div>
               <span className="text-xl font-bold text-foreground">Webgroove</span>
             </Link>
+            <NotificationBell />
           </div>
 
           {/* TAU Balance Card */}
