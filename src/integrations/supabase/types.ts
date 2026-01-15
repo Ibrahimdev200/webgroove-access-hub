@@ -14,6 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
+      account_recovery_requests: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          reason: string | null
+          resolution_notes: string | null
+          resolved_at: string | null
+          resolved_by: string | null
+          status: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          reason?: string | null
+          resolution_notes?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          status?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          reason?: string | null
+          resolution_notes?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          status?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       admin_announcements: {
         Row: {
           created_at: string
@@ -44,6 +80,36 @@ export type Database = {
           message?: string
           priority?: number
           title?: string
+        }
+        Relationships: []
+      }
+      admin_audit_logs: {
+        Row: {
+          action: string
+          admin_id: string
+          created_at: string
+          details: Json | null
+          id: string
+          target_user_id: string | null
+          target_wallet_id: string | null
+        }
+        Insert: {
+          action: string
+          admin_id: string
+          created_at?: string
+          details?: Json | null
+          id?: string
+          target_user_id?: string | null
+          target_wallet_id?: string | null
+        }
+        Update: {
+          action?: string
+          admin_id?: string
+          created_at?: string
+          details?: Json | null
+          id?: string
+          target_user_id?: string | null
+          target_wallet_id?: string | null
         }
         Relationships: []
       }
@@ -190,10 +256,13 @@ export type Database = {
         Row: {
           avatar_url: string | null
           bio: string | null
+          blocked_at: string | null
+          blocked_reason: string | null
           created_at: string
           display_name: string | null
           email: string
           id: string
+          is_blocked: boolean
           security_phrase: string | null
           security_phrase_hash: string | null
           updated_at: string
@@ -202,10 +271,13 @@ export type Database = {
         Insert: {
           avatar_url?: string | null
           bio?: string | null
+          blocked_at?: string | null
+          blocked_reason?: string | null
           created_at?: string
           display_name?: string | null
           email: string
           id?: string
+          is_blocked?: boolean
           security_phrase?: string | null
           security_phrase_hash?: string | null
           updated_at?: string
@@ -214,10 +286,13 @@ export type Database = {
         Update: {
           avatar_url?: string | null
           bio?: string | null
+          blocked_at?: string | null
+          blocked_reason?: string | null
           created_at?: string
           display_name?: string | null
           email?: string
           id?: string
+          is_blocked?: boolean
           security_phrase?: string | null
           security_phrase_hash?: string | null
           updated_at?: string
@@ -308,6 +383,8 @@ export type Database = {
           balance: number
           created_at: string
           daily_transfer_limit: number
+          frozen_at: string | null
+          frozen_reason: string | null
           id: string
           is_active: boolean
           updated_at: string
@@ -318,6 +395,8 @@ export type Database = {
           balance?: number
           created_at?: string
           daily_transfer_limit?: number
+          frozen_at?: string | null
+          frozen_reason?: string | null
           id?: string
           is_active?: boolean
           updated_at?: string
@@ -328,6 +407,8 @@ export type Database = {
           balance?: number
           created_at?: string
           daily_transfer_limit?: number
+          frozen_at?: string | null
+          frozen_reason?: string | null
           id?: string
           is_active?: boolean
           updated_at?: string
