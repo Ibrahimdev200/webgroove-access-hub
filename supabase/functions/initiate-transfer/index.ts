@@ -107,7 +107,7 @@ serve(async (req: Request) => {
         const resend = new Resend(resendApiKey);
         
         const emailResponse = await resend.emails.send({
-          from: "Webgroove <onboarding@resend.dev>",
+          from: "Webgroove <noreply@webgrow.com.ng>",
           to: [user.email],
           subject: "Your Webgroove Transfer Verification Code",
           html: `
