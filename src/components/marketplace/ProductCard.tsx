@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { Star, Zap } from "lucide-react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 
@@ -39,9 +40,11 @@ export const ProductCard = ({ product, index }: ProductCardProps) => {
     >
       <div className="flex items-start justify-between mb-4">
         <div>
-          <h3 className="font-semibold text-foreground mb-1 group-hover:text-tau transition-colors">
-            {product.name}
-          </h3>
+          <Link to={`/dashboard/marketplace/${product.slug}`}>
+            <h3 className="font-semibold text-foreground mb-1 group-hover:text-tau transition-colors cursor-pointer">
+              {product.name}
+            </h3>
+          </Link>
           <p className="text-sm text-muted-foreground">Vendor</p>
         </div>
         {product.rating && product.rating > 0 && (

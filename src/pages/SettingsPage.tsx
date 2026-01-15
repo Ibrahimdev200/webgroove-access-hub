@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Shield, Eye, EyeOff, Lock, Loader2, Copy, Check, AlertTriangle } from "lucide-react";
+import { Shield, Eye, Lock, Loader2, Copy, Check, AlertTriangle } from "lucide-react";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,6 +18,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { TransferLimitSetting } from "@/components/settings/TransferLimitSetting";
 
 const SettingsPage = () => {
   const { user } = useAuth();
@@ -123,6 +124,9 @@ const SettingsPage = () => {
           </p>
 
           <div className="space-y-6">
+            {/* Transfer Limit Setting */}
+            <TransferLimitSetting />
+
             {/* Security Phrase Card */}
             <Card>
               <CardHeader>
