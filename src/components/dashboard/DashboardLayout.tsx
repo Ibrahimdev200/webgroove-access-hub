@@ -12,11 +12,13 @@ import {
   Menu,
   X,
   ChevronRight,
+  Shield,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProfile } from "@/hooks/useProfile";
 import { useWallet } from "@/hooks/useWallet";
+import { useUserRole } from "@/hooks/useUserRole";
 import { NotificationBell } from "@/components/notifications/NotificationBell";
 
 const navItems = [
@@ -25,6 +27,10 @@ const navItems = [
   { name: "Marketplace", href: "/dashboard/marketplace", icon: ShoppingBag },
   { name: "My Products", href: "/dashboard/products", icon: Package },
   { name: "Settings", href: "/dashboard/settings", icon: Settings },
+];
+
+const adminNavItems = [
+  { name: "Admin Panel", href: "/dashboard/admin", icon: Shield },
 ];
 
 interface DashboardLayoutProps {
@@ -36,8 +42,11 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const { signOut } = useAuth();
   const { data: profile } = useProfile();
   const { data: wallet } = useWallet();
+  const { isAdmin } = useUserRole();
   const location = useLocation();
   const navigate = useNavigate();
+  
+  const allNavItems = isAdmin ? [...navItems, ...adminNavItems] : navItems;
 
   const handleSignOut = async () => {
     await signOut();
@@ -100,7 +109,7 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
 
           {/* Navigation */}
           <nav className="flex-1 px-4 py-4 space-y-1">
-            {navItems.map((item) => {
+            {allNavItems.map((item) => {
               const isActive = location.pathname === item.href;
               return (
                 <Link
