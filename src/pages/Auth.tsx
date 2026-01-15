@@ -1,22 +1,51 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Zap, Mail, Lock, User, ArrowRight, Loader2 } from "lucide-react";
+import { Zap, Mail, Lock, User, ArrowRight, Loader2, Eye, EyeOff, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
+
+interface SecurityQuestion {
+  id: string;
+  question: string;
+}
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [displayName, setDisplayName] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [securityQuestions, setSecurityQuestions] = useState<SecurityQuestion[]>([]);
+  const [selectedQuestion, setSelectedQuestion] = useState("");
+  const [securityAnswer, setSecurityAnswer] = useState("");
   const { signIn, signUp } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchSecurityQuestions = async () => {
+      const { data, error } = await supabase
+        .from("security_questions")
+        .select("id, question")
+        .eq("is_active", true)
+        .order("display_order");
+      
+      if (!error && data) {
+        setSecurityQuestions(data);
+      }
+    };
+
+    fetchSecurityQuestions();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,8 +61,37 @@ const Auth = () => {
         });
         navigate("/dashboard");
       } else {
+        // Validate confirm password
+        if (password !== confirmPassword) {
+          throw new Error("Passwords do not match");
+        }
+
+        // Validate security question
+        if (!selectedQuestion || !securityAnswer.trim()) {
+          throw new Error("Please select a security question and provide an answer");
+        }
+
         const { error } = await signUp(email, password);
         if (error) throw error;
+
+        // Get the current user to save security answer
+        const { data: { user } } = await supabase.auth.getUser();
+        
+        if (user) {
+          // Save security answer (hashed in a real app, but storing plaintext for demo)
+          const { error: answerError } = await supabase
+            .from("user_security_answers")
+            .insert({
+              user_id: user.id,
+              question_id: selectedQuestion,
+              answer_hash: securityAnswer.toLowerCase().trim(),
+            });
+
+          if (answerError) {
+            console.error("Failed to save security answer:", answerError);
+          }
+        }
+
         toast({
           title: "Account created!",
           description: "Welcome to Webgroove. You've received 100 TAU as a welcome bonus!",
@@ -118,16 +176,85 @@ const Auth = () => {
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                 <Input
                   id="password"
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   minLength={6}
-                  className="pl-10 h-12"
+                  className="pl-10 pr-10 h-12"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                </button>
               </div>
             </div>
+
+            {!isLogin && (
+              <>
+                <div className="space-y-2">
+                  <Label htmlFor="confirmPassword">Confirm Password</Label>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                    <Input
+                      id="confirmPassword"
+                      type={showConfirmPassword ? "text" : "password"}
+                      placeholder="••••••••"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      required
+                      minLength={6}
+                      className="pl-10 pr-10 h-12"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                    </button>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="securityQuestion" className="flex items-center gap-2">
+                    <ShieldCheck className="w-4 h-4 text-tau" />
+                    Security Question
+                  </Label>
+                  <Select value={selectedQuestion} onValueChange={setSelectedQuestion}>
+                    <SelectTrigger className="h-12">
+                      <SelectValue placeholder="Select a security question" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {securityQuestions.map((q) => (
+                        <SelectItem key={q.id} value={q.id}>
+                          {q.question}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="securityAnswer">Your Answer</Label>
+                  <Input
+                    id="securityAnswer"
+                    type="text"
+                    placeholder="Your answer (case-insensitive)"
+                    value={securityAnswer}
+                    onChange={(e) => setSecurityAnswer(e.target.value)}
+                    className="h-12"
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    This will be used to recover your account if you forget your password.
+                  </p>
+                </div>
+              </>
+            )}
 
             <Button type="submit" variant="tau" size="lg" className="w-full" disabled={loading}>
               {loading ? (
