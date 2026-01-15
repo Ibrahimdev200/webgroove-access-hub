@@ -1,5 +1,6 @@
 import { Navigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { useIdleTimeout } from "@/hooks/useIdleTimeout";
 import { Loader2 } from "lucide-react";
 
 interface ProtectedRouteProps {
@@ -8,6 +9,9 @@ interface ProtectedRouteProps {
 
 export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   const { user, loading } = useAuth();
+  
+  // Auto-logout after 10 minutes of inactivity
+  useIdleTimeout();
 
   if (loading) {
     return (
