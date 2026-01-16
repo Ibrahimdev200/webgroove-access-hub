@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import { useEffect } from "react";
+import { useEffect, useCallback } from "react";
 
 export const useWallet = () => {
   const { user } = useAuth();
@@ -26,10 +26,10 @@ export const useWallet = () => {
 
   // Real-time subscription for wallet balance updates
   useEffect(() => {
-    if (!user) return;
+    if (!user?.id) return;
 
     const channel = supabase
-      .channel("wallet-balance")
+      .channel(`wallet-balance-${user.id}`)
       .on(
         "postgres_changes",
         {
@@ -39,8 +39,10 @@ export const useWallet = () => {
           filter: `user_id=eq.${user.id}`,
         },
         (payload) => {
-          // Update wallet cache immediately with new balance
-          queryClient.setQueryData(["wallet", user.id], payload.new);
+          // Use setTimeout to avoid React state update conflicts
+          setTimeout(() => {
+            queryClient.setQueryData(["wallet", user.id], payload.new);
+          }, 0);
         }
       )
       .subscribe();
@@ -48,7 +50,7 @@ export const useWallet = () => {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [user, queryClient]);
+  }, [user?.id, queryClient]);
 
   return query;
 };
@@ -86,10 +88,10 @@ export const useTransactions = () => {
 
   // Real-time subscription for new transactions
   useEffect(() => {
-    if (!user) return;
+    if (!user?.id) return;
 
     const channel = supabase
-      .channel("transactions")
+      .channel(`transactions-${user.id}`)
       .on(
         "postgres_changes",
         {
@@ -98,8 +100,10 @@ export const useTransactions = () => {
           table: "tau_transactions",
         },
         () => {
-          // Invalidate and refetch transactions when new one is added
-          queryClient.invalidateQueries({ queryKey: ["transactions", user.id] });
+          // Use setTimeout to avoid React state update conflicts
+          setTimeout(() => {
+            queryClient.invalidateQueries({ queryKey: ["transactions", user.id] });
+          }, 0);
         }
       )
       .subscribe();
@@ -107,7 +111,7 @@ export const useTransactions = () => {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [user, queryClient]);
+  }, [user?.id, queryClient]);
 
   return query;
 };
