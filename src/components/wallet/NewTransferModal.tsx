@@ -267,9 +267,14 @@ export const NewTransferModal = ({ open, onOpenChange }: NewTransferModalProps) 
                   </InputOTP>
                 </div>
 
-                <p className="text-xs text-muted-foreground text-center">
-                  Code expires in 5 minutes
-                </p>
+                <div className="text-center space-y-1">
+                  <p className="text-xs text-muted-foreground">
+                    Check your inbox or spam folder for the OTP
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    Code expires in 5 minutes
+                  </p>
+                </div>
 
                 <div className="flex gap-2">
                   <Button
