@@ -72,7 +72,7 @@ serve(async (req: Request) => {
       .single();
 
     if (recipientError || !recipientWallet) {
-      throw new Error("Recipient wallet not found");
+      throw new Error(`Recipient wallet "${recipientAddress}" not found. Please check the address and try again.`);
     }
 
     if (recipientWallet.id === senderWallet.id) {
