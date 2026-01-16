@@ -1,11 +1,13 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { useEffect } from "react";
 
 export const useWallet = () => {
   const { user } = useAuth();
+  const queryClient = useQueryClient();
 
-  return useQuery({
+  const query = useQuery({
     queryKey: ["wallet", user?.id],
     queryFn: async () => {
       if (!user) return null;
@@ -21,12 +23,41 @@ export const useWallet = () => {
     },
     enabled: !!user,
   });
+
+  // Real-time subscription for wallet balance updates
+  useEffect(() => {
+    if (!user) return;
+
+    const channel = supabase
+      .channel("wallet-balance")
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "tau_wallets",
+          filter: `user_id=eq.${user.id}`,
+        },
+        (payload) => {
+          // Update wallet cache immediately with new balance
+          queryClient.setQueryData(["wallet", user.id], payload.new);
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user, queryClient]);
+
+  return query;
 };
 
 export const useTransactions = () => {
   const { user } = useAuth();
+  const queryClient = useQueryClient();
 
-  return useQuery({
+  const query = useQuery({
     queryKey: ["transactions", user?.id],
     queryFn: async () => {
       if (!user) return [];
@@ -52,6 +83,33 @@ export const useTransactions = () => {
     },
     enabled: !!user,
   });
+
+  // Real-time subscription for new transactions
+  useEffect(() => {
+    if (!user) return;
+
+    const channel = supabase
+      .channel("transactions")
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "tau_transactions",
+        },
+        () => {
+          // Invalidate and refetch transactions when new one is added
+          queryClient.invalidateQueries({ queryKey: ["transactions", user.id] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user, queryClient]);
+
+  return query;
 };
 
 export const useInitiateTransfer = () => {
