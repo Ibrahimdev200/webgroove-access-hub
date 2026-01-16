@@ -103,67 +103,24 @@ serve(async (req: Request) => {
     }
 
     const amount = Number(otp.amount);
-
-    // Check balance again
-    if (Number(senderWallet.balance) < amount) {
-      throw new Error("Insufficient balance");
-    }
-
-    // Perform transfer
-    const newSenderBalance = Number(senderWallet.balance) - amount;
-    const newRecipientBalance = Number(recipientWallet.balance) + amount;
-
-    // Update sender wallet
-    const { error: updateSenderError } = await supabase
-      .from("tau_wallets")
-      .update({ balance: newSenderBalance })
-      .eq("id", senderWallet.id);
-
-    if (updateSenderError) {
-      throw new Error("Failed to debit sender");
-    }
-
-    // Update recipient wallet
-    const { error: updateRecipientError } = await supabase
-      .from("tau_wallets")
-      .update({ balance: newRecipientBalance })
-      .eq("id", recipientWallet.id);
-
-    if (updateRecipientError) {
-      // Rollback sender
-      await supabase
-        .from("tau_wallets")
-        .update({ balance: senderWallet.balance })
-        .eq("id", senderWallet.id);
-      throw new Error("Failed to credit recipient");
-    }
-
-    // Create transaction records
     const transferId = crypto.randomUUID();
 
-    // Sender transaction
-    await supabase.from("tau_transactions").insert({
-      wallet_id: senderWallet.id,
-      type: "transfer_out",
-      amount: amount,
-      balance_after: newSenderBalance,
-      counterparty_wallet_id: recipientWallet.id,
-      description: otp.purpose || "TAU Transfer",
-      reference_id: transferId,
-      status: "completed",
-    });
+    // Use atomic transfer function to prevent race conditions
+    const { data: transferResult, error: transferExecError } = await supabase.rpc(
+      "execute_transfer",
+      {
+        p_sender_wallet_id: senderWallet.id,
+        p_recipient_wallet_id: recipientWallet.id,
+        p_amount: amount,
+        p_description: otp.purpose || "TAU Transfer",
+        p_reference_id: transferId,
+      }
+    );
 
-    // Recipient transaction
-    await supabase.from("tau_transactions").insert({
-      wallet_id: recipientWallet.id,
-      type: "transfer_in",
-      amount: amount,
-      balance_after: newRecipientBalance,
-      counterparty_wallet_id: senderWallet.id,
-      description: otp.purpose || "TAU Transfer",
-      reference_id: transferId,
-      status: "completed",
-    });
+    if (transferExecError) {
+      console.error("Transfer execution error:", transferExecError);
+      throw new Error(transferExecError.message || "Failed to execute transfer");
+    }
 
     return new Response(
       JSON.stringify({
@@ -171,7 +128,7 @@ serve(async (req: Request) => {
         message: "Transfer completed successfully",
         transferId: transferId,
         amount: amount,
-        newBalance: newSenderBalance,
+        newBalance: transferResult?.sender_balance ?? 0,
       }),
       {
         status: 200,

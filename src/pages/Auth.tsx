@@ -103,13 +103,20 @@ const Auth = () => {
         const { data: { user } } = await supabase.auth.getUser();
         
         if (user) {
-          // Save security answer
+          // Hash the security answer before storing (fixes plaintext storage vulnerability)
+          const encoder = new TextEncoder();
+          const data = encoder.encode(securityAnswer.toLowerCase().trim());
+          const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+          const hashArray = Array.from(new Uint8Array(hashBuffer));
+          const answerHash = hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
+
+          // Save security answer with hashed value
           const { error: answerError } = await supabase
             .from("user_security_answers")
             .insert({
               user_id: user.id,
               question_id: selectedQuestion,
-              answer_hash: securityAnswer.toLowerCase().trim(),
+              answer_hash: answerHash,
             });
 
           if (answerError) {

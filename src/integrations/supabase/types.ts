@@ -606,6 +606,16 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      execute_transfer: {
+        Args: {
+          p_amount: number
+          p_description: string
+          p_recipient_wallet_id: string
+          p_reference_id: string
+          p_sender_wallet_id: string
+        }
+        Returns: Json
+      }
       generate_security_phrase: { Args: never; Returns: string }
       has_role: {
         Args: {
