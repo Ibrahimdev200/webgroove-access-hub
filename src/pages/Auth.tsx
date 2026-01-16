@@ -130,7 +130,7 @@ const Auth = () => {
             // If no phrase, just navigate
             toast({
               title: "Account created!",
-              description: "Welcome to Webgroove. You've received 100 TAU as a welcome bonus!",
+              description: "Welcome to Webgrow. You've received 10 TAU as a welcome bonus!",
             });
             navigate("/dashboard");
           }
@@ -163,7 +163,7 @@ const Auth = () => {
               <div className="w-10 h-10 rounded-lg gradient-tau flex items-center justify-center shadow-tau">
                 <Zap className="w-5 h-5 text-tau-foreground" />
               </div>
-              <span className="text-2xl font-bold text-foreground">Webgroove</span>
+              <span className="text-2xl font-bold text-foreground">Webgrow</span>
             </a>
 
             <h1 className="text-3xl font-bold text-foreground mb-2">
@@ -172,7 +172,7 @@ const Auth = () => {
             <p className="text-muted-foreground mb-8">
               {isLogin
                 ? "Sign in to access your TAU wallet and marketplace"
-                : "Join Webgroove and get 100 TAU as a welcome bonus"}
+                : "Join Webgrow and get 10 TAU as a welcome bonus"}
             </p>
 
             <form onSubmit={handleSubmit} className="space-y-5">

@@ -45,7 +45,7 @@ export const Hero = () => {
             className="text-lg sm:text-xl text-primary-foreground/70 max-w-2xl mx-auto mb-10"
           >
             Access premium tools, services, and training with TAU—your internal access units. 
-            Earn, transfer, and activate digital resources seamlessly within Webgroove.
+            Earn, transfer, and activate digital resources seamlessly within Webgrow.
           </motion.p>
 
           {/* CTA Buttons */}

@@ -15,7 +15,7 @@ const buttonVariants = cva(
         secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80 shadow-sm",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
-        // Webgroove custom variants
+        // Webgrow custom variants
         tau: "bg-tau text-tau-foreground hover:bg-tau/90 shadow-md hover:shadow-lg transition-shadow",
         "tau-outline": "border-2 border-tau text-tau hover:bg-tau/10 bg-transparent",
         hero: "bg-tau text-tau-foreground hover:bg-tau/90 shadow-lg hover:shadow-xl transition-all hover:-translate-y-0.5",

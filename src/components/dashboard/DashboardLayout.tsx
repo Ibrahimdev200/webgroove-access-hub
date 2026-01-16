@@ -13,12 +13,17 @@ import {
   X,
   ChevronRight,
   Shield,
+  Eye,
+  EyeOff,
+  Moon,
+  Sun,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProfile } from "@/hooks/useProfile";
 import { useWallet } from "@/hooks/useWallet";
 import { useUserRole } from "@/hooks/useUserRole";
+import { useTheme } from "@/hooks/useTheme";
 import { NotificationBell } from "@/components/notifications/NotificationBell";
 
 const navItems = [
@@ -39,10 +44,12 @@ interface DashboardLayoutProps {
 
 export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [balanceVisible, setBalanceVisible] = useState(true);
   const { signOut } = useAuth();
   const { data: profile } = useProfile();
   const { data: wallet } = useWallet();
   const { isAdmin } = useUserRole();
+  const { theme, toggleTheme } = useTheme();
   const location = useLocation();
   const navigate = useNavigate();
   
@@ -62,9 +69,20 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
             <div className="w-8 h-8 rounded-lg gradient-tau flex items-center justify-center">
               <Zap className="w-4 h-4 text-tau-foreground" />
             </div>
-            <span className="font-bold text-foreground">Webgroove</span>
+            <span className="font-bold text-foreground">Webgrow</span>
           </Link>
           <div className="flex items-center gap-2">
+            <button
+              onClick={toggleTheme}
+              className="p-2 hover:bg-secondary rounded-lg transition-colors"
+              title={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+            >
+              {theme === "dark" ? (
+                <Sun className="w-5 h-5 text-muted-foreground" />
+              ) : (
+                <Moon className="w-5 h-5 text-muted-foreground" />
+              )}
+            </button>
             <NotificationBell />
             <button onClick={() => setSidebarOpen(!sidebarOpen)} className="p-2">
               {sidebarOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -86,17 +104,46 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
               <div className="w-9 h-9 rounded-lg gradient-tau flex items-center justify-center shadow-tau">
                 <Zap className="w-5 h-5 text-tau-foreground" />
               </div>
-              <span className="text-xl font-bold text-foreground">Webgroove</span>
+              <span className="text-xl font-bold text-foreground">Webgrow</span>
             </Link>
-            <NotificationBell />
+            <div className="flex items-center gap-1">
+              <button
+                onClick={toggleTheme}
+                className="p-2 hover:bg-secondary rounded-lg transition-colors"
+                title={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+              >
+                {theme === "dark" ? (
+                  <Sun className="w-4 h-4 text-muted-foreground" />
+                ) : (
+                  <Moon className="w-4 h-4 text-muted-foreground" />
+                )}
+              </button>
+              <NotificationBell />
+            </div>
           </div>
 
           {/* TAU Balance Card */}
           <div className="p-4 mt-4 lg:mt-0">
             <div className="bg-secondary rounded-xl p-4">
-              <p className="text-sm text-muted-foreground mb-1">TAU Balance</p>
+              <div className="flex items-center justify-between mb-1">
+                <p className="text-sm text-muted-foreground">TAU Balance</p>
+                <button
+                  onClick={() => setBalanceVisible(!balanceVisible)}
+                  className="p-1 hover:bg-background/50 rounded transition-colors"
+                  title={balanceVisible ? "Hide balance" : "Show balance"}
+                >
+                  {balanceVisible ? (
+                    <Eye className="w-4 h-4 text-muted-foreground" />
+                  ) : (
+                    <EyeOff className="w-4 h-4 text-muted-foreground" />
+                  )}
+                </button>
+              </div>
               <p className="text-2xl font-bold text-foreground">
-                {wallet?.balance ? Number(wallet.balance).toFixed(2) : "0.00"}
+                {balanceVisible 
+                  ? (wallet?.balance ? Number(wallet.balance).toFixed(2) : "0.00")
+                  : "••••••"
+                }
               </p>
               <Link
                 to="/dashboard/wallet"

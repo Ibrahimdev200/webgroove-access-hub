@@ -29,7 +29,7 @@ export const TauSection = () => {
             </h2>
             <p className="text-lg text-muted-foreground mb-8 leading-relaxed">
               TAU (Tech Access Units) is your key to unlocking premium tools and services 
-              within Webgroove. It's not currency—it's access. Earn TAU through 
+              within Webgrow. It's not currency—it's access. Earn TAU through 
               contributions, purchase directly, or receive from other verified users.
             </p>
 

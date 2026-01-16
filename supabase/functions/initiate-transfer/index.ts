@@ -107,9 +107,9 @@ serve(async (req: Request) => {
         const resend = new Resend(resendApiKey);
         
         const emailResponse = await resend.emails.send({
-          from: "Webgroove <noreply@webgrow.com.ng>",
+          from: "Webgrow <noreply@webgrow.com.ng>",
           to: [user.email],
-          subject: "Your Webgroove Transfer Verification Code",
+          subject: "Your Webgrow Transfer Verification Code",
           html: `
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
               <h1 style="color: #10b981; margin-bottom: 24px;">Transfer Verification</h1>
@@ -126,7 +126,7 @@ serve(async (req: Request) => {
               </p>
               <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 24px 0;" />
               <p style="font-size: 12px; color: #9ca3af;">
-                © ${new Date().getFullYear()} Webgroove. All rights reserved.
+                © ${new Date().getFullYear()} Webgrow. All rights reserved.
               </p>
             </div>
           `,

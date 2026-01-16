@@ -51,7 +51,7 @@ const Dashboard = () => {
           Welcome back, {profile?.display_name || "User"}!
         </h1>
         <p className="text-muted-foreground">
-          Here's what's happening with your Webgroove account.
+          Here's what's happening with your Webgrow account.
         </p>
       </div>
 
