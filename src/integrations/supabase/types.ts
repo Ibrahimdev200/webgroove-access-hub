@@ -384,6 +384,92 @@ export type Database = {
         }
         Relationships: []
       }
+      task_applications: {
+        Row: {
+          applicant_id: string
+          cover_message: string | null
+          created_at: string
+          id: string
+          status: string
+          task_id: string
+          updated_at: string
+        }
+        Insert: {
+          applicant_id: string
+          cover_message?: string | null
+          created_at?: string
+          id?: string
+          status?: string
+          task_id: string
+          updated_at?: string
+        }
+        Update: {
+          applicant_id?: string
+          cover_message?: string | null
+          created_at?: string
+          id?: string
+          status?: string
+          task_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "task_applications_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tasks: {
+        Row: {
+          assigned_at: string | null
+          assigned_to: string | null
+          completed_at: string | null
+          created_at: string
+          deadline: string | null
+          description: string
+          id: string
+          owner_id: string
+          requirements: string | null
+          status: Database["public"]["Enums"]["task_status"]
+          tau_reward: number
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          assigned_at?: string | null
+          assigned_to?: string | null
+          completed_at?: string | null
+          created_at?: string
+          deadline?: string | null
+          description: string
+          id?: string
+          owner_id: string
+          requirements?: string | null
+          status?: Database["public"]["Enums"]["task_status"]
+          tau_reward: number
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          assigned_at?: string | null
+          assigned_to?: string | null
+          completed_at?: string | null
+          created_at?: string
+          deadline?: string | null
+          description?: string
+          id?: string
+          owner_id?: string
+          requirements?: string | null
+          status?: Database["public"]["Enums"]["task_status"]
+          tau_reward?: number
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       tau_transactions: {
         Row: {
           amount: number
@@ -630,6 +716,12 @@ export type Database = {
       order_status: "pending" | "completed" | "refunded" | "cancelled"
       payment_method: "tau" | "card"
       product_status: "draft" | "pending" | "active" | "inactive"
+      task_status:
+        | "open"
+        | "in_progress"
+        | "completed"
+        | "cancelled"
+        | "disputed"
       transaction_status: "pending" | "completed" | "failed" | "cancelled"
       transaction_type:
         | "purchase"
@@ -768,6 +860,13 @@ export const Constants = {
       order_status: ["pending", "completed", "refunded", "cancelled"],
       payment_method: ["tau", "card"],
       product_status: ["draft", "pending", "active", "inactive"],
+      task_status: [
+        "open",
+        "in_progress",
+        "completed",
+        "cancelled",
+        "disputed",
+      ],
       transaction_status: ["pending", "completed", "failed", "cancelled"],
       transaction_type: [
         "purchase",

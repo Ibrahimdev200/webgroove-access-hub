@@ -8,6 +8,7 @@ import {
   ShoppingBag,
   Package,
   Store,
+  Briefcase,
   Settings,
   LogOut,
   Menu,
@@ -32,7 +33,8 @@ const navItems = [
   { name: "TAU Wallet", href: "/dashboard/wallet", icon: Wallet },
   { name: "Marketplace", href: "/dashboard/marketplace", icon: ShoppingBag },
   { name: "My Products", href: "/dashboard/products", icon: Package },
-  { name: "Vendor Dashboard", href: "/dashboard/vendor", icon: Store },
+  { name: "Sell Products", href: "/dashboard/vendor", icon: Store },
+  { name: "Task Board", href: "/dashboard/tasks", icon: Briefcase },
   { name: "Settings", href: "/dashboard/settings", icon: Settings },
 ];
 

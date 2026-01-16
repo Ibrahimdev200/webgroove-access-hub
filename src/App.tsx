@@ -13,6 +13,7 @@ import MarketplacePage from "./pages/MarketplacePage";
 import ProductPage from "./pages/ProductPage";
 import MyProductsPage from "./pages/MyProductsPage";
 import VendorDashboardPage from "./pages/VendorDashboardPage";
+import TasksPage from "./pages/TasksPage";
 import SettingsPage from "./pages/SettingsPage";
 import AdminPage from "./pages/AdminPage";
 import AboutPage from "./pages/AboutPage";
@@ -39,6 +40,7 @@ const App = () => (
             <Route path="/dashboard/marketplace/:slug" element={<ProtectedRoute><ProductPage /></ProtectedRoute>} />
             <Route path="/dashboard/products" element={<ProtectedRoute><MyProductsPage /></ProtectedRoute>} />
             <Route path="/dashboard/vendor" element={<ProtectedRoute><VendorDashboardPage /></ProtectedRoute>} />
+            <Route path="/dashboard/tasks" element={<ProtectedRoute><TasksPage /></ProtectedRoute>} />
             <Route path="/dashboard/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
             <Route path="/dashboard/admin" element={<ProtectedRoute><AdminPage /></ProtectedRoute>} />
             <Route path="*" element={<NotFound />} />
