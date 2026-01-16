@@ -252,6 +252,66 @@ export type Database = {
           },
         ]
       }
+      pending_transfers: {
+        Row: {
+          accepted_at: string | null
+          amount: number
+          cancelled_at: string | null
+          created_at: string
+          expires_at: string
+          id: string
+          purpose: string | null
+          recipient_user_id: string
+          recipient_wallet_id: string
+          sender_user_id: string
+          sender_wallet_id: string
+          status: string
+        }
+        Insert: {
+          accepted_at?: string | null
+          amount: number
+          cancelled_at?: string | null
+          created_at?: string
+          expires_at?: string
+          id?: string
+          purpose?: string | null
+          recipient_user_id: string
+          recipient_wallet_id: string
+          sender_user_id: string
+          sender_wallet_id: string
+          status?: string
+        }
+        Update: {
+          accepted_at?: string | null
+          amount?: number
+          cancelled_at?: string | null
+          created_at?: string
+          expires_at?: string
+          id?: string
+          purpose?: string | null
+          recipient_user_id?: string
+          recipient_wallet_id?: string
+          sender_user_id?: string
+          sender_wallet_id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pending_transfers_recipient_wallet_id_fkey"
+            columns: ["recipient_wallet_id"]
+            isOneToOne: false
+            referencedRelation: "tau_wallets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pending_transfers_sender_wallet_id_fkey"
+            columns: ["sender_wallet_id"]
+            isOneToOne: false
+            referencedRelation: "tau_wallets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null

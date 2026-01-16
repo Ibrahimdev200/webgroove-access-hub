@@ -1,10 +1,11 @@
 import { Zap } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const footerLinks = {
   Platform: ["Features", "Marketplace", "Pricing", "Security"],
   Resources: ["Documentation", "API Reference", "Tutorials", "Blog"],
-  Company: ["About Us", "Careers", "Contact", "Press Kit"],
-  Legal: ["Terms of Service", "Privacy Policy", "Cookie Policy", "Compliance"],
+  Company: [{ label: "About Us", href: "/about" }, "Careers", "Contact", "Press Kit"],
+  Legal: [{ label: "Terms of Service", href: "/terms" }, "Privacy Policy", "Cookie Policy", "Compliance"],
 };
 
 export const Footer = () => {
@@ -31,16 +32,31 @@ export const Footer = () => {
             <div key={category}>
               <h4 className="font-semibold mb-4">{category}</h4>
               <ul className="space-y-3">
-                {links.map((link) => (
-                  <li key={link}>
-                    <a
-                      href="#"
-                      className="text-sm text-primary-foreground/70 hover:text-primary-foreground transition-colors"
-                    >
-                      {link}
-                    </a>
-                  </li>
-                ))}
+                {links.map((link) => {
+                  const isLinkObject = typeof link === "object";
+                  const label = isLinkObject ? link.label : link;
+                  const href = isLinkObject ? link.href : "#";
+                  
+                  return (
+                    <li key={label}>
+                      {isLinkObject ? (
+                        <Link
+                          to={href}
+                          className="text-sm text-primary-foreground/70 hover:text-primary-foreground transition-colors"
+                        >
+                          {label}
+                        </Link>
+                      ) : (
+                        <a
+                          href="#"
+                          className="text-sm text-primary-foreground/70 hover:text-primary-foreground transition-colors"
+                        >
+                          {label}
+                        </a>
+                      )}
+                    </li>
+                  );
+                })}
               </ul>
             </div>
           ))}
