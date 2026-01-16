@@ -63,62 +63,24 @@ serve(async (req: Request) => {
       throw new Error("Transfer has expired");
     }
 
-    // Get sender wallet
-    const { data: senderWallet, error: senderError } = await supabase
-      .from("tau_wallets")
-      .select("*")
-      .eq("id", transfer.sender_wallet_id)
-      .single();
-
-    if (senderError || !senderWallet) {
-      throw new Error("Sender wallet not found");
-    }
-
-    // Get recipient wallet
-    const { data: recipientWallet, error: recipientError } = await supabase
-      .from("tau_wallets")
-      .select("*")
-      .eq("id", transfer.recipient_wallet_id)
-      .single();
-
-    if (recipientError || !recipientWallet) {
-      throw new Error("Recipient wallet not found");
-    }
-
     const amount = Number(transfer.amount);
+    const referenceId = `transfer_${transferId}`;
 
-    // Check sender still has balance
-    if (Number(senderWallet.balance) < amount) {
-      throw new Error("Sender no longer has sufficient balance");
-    }
+    // Use atomic transfer function to prevent race conditions
+    const { data: transferResult, error: transferExecError } = await supabase.rpc(
+      "execute_transfer",
+      {
+        p_sender_wallet_id: transfer.sender_wallet_id,
+        p_recipient_wallet_id: transfer.recipient_wallet_id,
+        p_amount: amount,
+        p_description: transfer.purpose || "TAU Transfer",
+        p_reference_id: referenceId,
+      }
+    );
 
-    // Perform transfer
-    const newSenderBalance = Number(senderWallet.balance) - amount;
-    const newRecipientBalance = Number(recipientWallet.balance) + amount;
-
-    // Update sender wallet
-    const { error: updateSenderError } = await supabase
-      .from("tau_wallets")
-      .update({ balance: newSenderBalance })
-      .eq("id", senderWallet.id);
-
-    if (updateSenderError) {
-      throw new Error("Failed to debit sender");
-    }
-
-    // Update recipient wallet
-    const { error: updateRecipientError } = await supabase
-      .from("tau_wallets")
-      .update({ balance: newRecipientBalance })
-      .eq("id", recipientWallet.id);
-
-    if (updateRecipientError) {
-      // Rollback sender
-      await supabase
-        .from("tau_wallets")
-        .update({ balance: senderWallet.balance })
-        .eq("id", senderWallet.id);
-      throw new Error("Failed to credit recipient");
+    if (transferExecError) {
+      console.error("Transfer execution error:", transferExecError);
+      throw new Error(transferExecError.message || "Failed to execute transfer");
     }
 
     // Mark transfer as accepted
@@ -130,34 +92,7 @@ serve(async (req: Request) => {
       })
       .eq("id", transferId);
 
-    // Create transaction records
-    const referenceId = `transfer_${transferId}`;
-
-    // Sender transaction
-    await supabase.from("tau_transactions").insert({
-      wallet_id: senderWallet.id,
-      type: "transfer_out",
-      amount: amount,
-      balance_after: newSenderBalance,
-      counterparty_wallet_id: recipientWallet.id,
-      description: transfer.purpose || "TAU Transfer",
-      reference_id: referenceId,
-      status: "completed",
-    });
-
-    // Recipient transaction
-    await supabase.from("tau_transactions").insert({
-      wallet_id: recipientWallet.id,
-      type: "transfer_in",
-      amount: amount,
-      balance_after: newRecipientBalance,
-      counterparty_wallet_id: senderWallet.id,
-      description: transfer.purpose || "TAU Transfer",
-      reference_id: referenceId,
-      status: "completed",
-    });
-
-    // Get profiles for email notifications
+    // Get profiles for email notifications (using service role, bypasses RLS)
     const { data: senderProfile } = await supabase
       .from("profiles")
       .select("email, display_name")
@@ -169,6 +104,9 @@ serve(async (req: Request) => {
       .select("email, display_name")
       .eq("user_id", user.id)
       .single();
+
+    const newSenderBalance = transferResult?.sender_balance ?? 0;
+    const newRecipientBalance = transferResult?.recipient_balance ?? 0;
 
     // Send notification emails
     if (resendApiKey) {
@@ -193,7 +131,7 @@ serve(async (req: Request) => {
                 <div style="background: #f3f4f6; border-radius: 8px; padding: 24px; text-align: center; margin: 24px 0;">
                   <p style="font-size: 14px; color: #6b7280; margin-bottom: 8px;">Amount Sent:</p>
                   <p style="font-size: 32px; font-weight: bold; color: #ef4444; margin: 0;">-${amount} TAU</p>
-                  <p style="font-size: 14px; color: #6b7280; margin-top: 8px;">New Balance: ${newSenderBalance.toFixed(2)} TAU</p>
+                  <p style="font-size: 14px; color: #6b7280; margin-top: 8px;">New Balance: ${Number(newSenderBalance).toFixed(2)} TAU</p>
                 </div>
                 <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 24px 0;" />
                 <p style="font-size: 12px; color: #9ca3af;">
@@ -222,7 +160,7 @@ serve(async (req: Request) => {
                 <div style="background: #f3f4f6; border-radius: 8px; padding: 24px; text-align: center; margin: 24px 0;">
                   <p style="font-size: 14px; color: #6b7280; margin-bottom: 8px;">Amount Received:</p>
                   <p style="font-size: 32px; font-weight: bold; color: #10b981; margin: 0;">+${amount} TAU</p>
-                  <p style="font-size: 14px; color: #6b7280; margin-top: 8px;">New Balance: ${newRecipientBalance.toFixed(2)} TAU</p>
+                  <p style="font-size: 14px; color: #6b7280; margin-top: 8px;">New Balance: ${Number(newRecipientBalance).toFixed(2)} TAU</p>
                 </div>
                 <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 24px 0;" />
                 <p style="font-size: 12px; color: #9ca3af;">
