@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Shield, Eye, Lock, Loader2, Copy, Check, AlertTriangle } from "lucide-react";
+import { Shield, Eye, Lock, Loader2, Copy, Check, AlertTriangle, Moon, Sun } from "lucide-react";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -19,10 +20,13 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { TransferLimitSetting } from "@/components/settings/TransferLimitSetting";
+import { ResetSecurityQuestion } from "@/components/settings/ResetSecurityQuestion";
+import { useTheme } from "@/hooks/useTheme";
 
 const SettingsPage = () => {
   const { user } = useAuth();
   const { toast } = useToast();
+  const { theme, toggleTheme } = useTheme();
   const [showPhrase, setShowPhrase] = useState(false);
   const [password, setPassword] = useState("");
   const [verifying, setVerifying] = useState(false);
@@ -124,8 +128,42 @@ const SettingsPage = () => {
           </p>
 
           <div className="space-y-6">
+            {/* Appearance Card */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  {theme === "dark" ? (
+                    <Moon className="w-5 h-5 text-tau" />
+                  ) : (
+                    <Sun className="w-5 h-5 text-tau" />
+                  )}
+                  Appearance
+                </CardTitle>
+                <CardDescription>
+                  Customize how Webgrow looks on your device
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="font-medium">Dark Mode</p>
+                    <p className="text-sm text-muted-foreground">
+                      Toggle between light and dark theme
+                    </p>
+                  </div>
+                  <Switch
+                    checked={theme === "dark"}
+                    onCheckedChange={toggleTheme}
+                  />
+                </div>
+              </CardContent>
+            </Card>
+
             {/* Transfer Limit Setting */}
             <TransferLimitSetting />
+
+            {/* Reset Security Question */}
+            <ResetSecurityQuestion />
 
             {/* Security Phrase Card */}
             <Card>
@@ -219,7 +257,7 @@ const SettingsPage = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Lock className="w-5 h-5 text-tau" />
-                  Security Question
+                  Current Security Question
                 </CardTitle>
                 <CardDescription>
                   Your security question is used for account recovery.

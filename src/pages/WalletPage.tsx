@@ -9,19 +9,28 @@ import {
   Check,
   Zap,
   History,
+  RefreshCw,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { Button } from "@/components/ui/button";
 import { useWallet, useTransactions } from "@/hooks/useWallet";
-import { TransferModal } from "@/components/wallet/TransferModal";
+import { NewTransferModal } from "@/components/wallet/NewTransferModal";
+import { PendingTransfersSection } from "@/components/wallet/PendingTransfersSection";
 import { useToast } from "@/hooks/use-toast";
+import { useQueryClient } from "@tanstack/react-query";
+import { useAuth } from "@/contexts/AuthContext";
 
 const WalletPage = () => {
-  const { data: wallet } = useWallet();
+  const { user } = useAuth();
+  const { data: wallet, isLoading, isFetching } = useWallet();
   const { data: transactions } = useTransactions();
   const [transferModalOpen, setTransferModalOpen] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [balanceVisible, setBalanceVisible] = useState(true);
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   const copyAddress = () => {
     if (wallet?.wallet_address) {
@@ -33,6 +42,17 @@ const WalletPage = () => {
       });
       setTimeout(() => setCopied(false), 2000);
     }
+  };
+
+  const refreshBalance = () => {
+    queryClient.invalidateQueries({ queryKey: ["wallet", user?.id] });
+    queryClient.invalidateQueries({ queryKey: ["transactions", user?.id] });
+    queryClient.invalidateQueries({ queryKey: ["incoming-transfers", user?.id] });
+    queryClient.invalidateQueries({ queryKey: ["outgoing-transfers", user?.id] });
+    toast({
+      title: "Refreshing...",
+      description: "Fetching latest balance and transactions",
+    });
   };
 
   return (
@@ -52,9 +72,33 @@ const WalletPage = () => {
                   <Wallet className="w-6 h-6 text-tau-foreground" />
                 </div>
                 <div>
-                  <p className="text-sm text-primary-foreground/70">TAU Balance</p>
+                  <div className="flex items-center gap-2">
+                    <p className="text-sm text-primary-foreground/70">TAU Balance</p>
+                    <button
+                      onClick={() => setBalanceVisible(!balanceVisible)}
+                      className="p-1 hover:bg-primary-foreground/10 rounded transition-colors"
+                      title={balanceVisible ? "Hide balance" : "Show balance"}
+                    >
+                      {balanceVisible ? (
+                        <Eye className="w-4 h-4 text-primary-foreground/70" />
+                      ) : (
+                        <EyeOff className="w-4 h-4 text-primary-foreground/70" />
+                      )}
+                    </button>
+                    <button
+                      onClick={refreshBalance}
+                      className="p-1 hover:bg-primary-foreground/10 rounded transition-colors"
+                      title="Refresh balance"
+                      disabled={isFetching}
+                    >
+                      <RefreshCw className={`w-4 h-4 text-primary-foreground/70 ${isFetching ? 'animate-spin' : ''}`} />
+                    </button>
+                  </div>
                   <p className="text-4xl font-bold text-primary-foreground">
-                    {wallet?.balance ? Number(wallet.balance).toFixed(2) : "0.00"}
+                    {balanceVisible 
+                      ? (wallet?.balance ? Number(wallet.balance).toFixed(2) : "0.00")
+                      : "••••••"
+                    }
                   </p>
                 </div>
               </div>
@@ -84,14 +128,22 @@ const WalletPage = () => {
                 onClick={() => setTransferModalOpen(true)}
               >
                 <Send className="w-5 h-5 mr-2" />
-                Transfer TAU
+                Send TAU
               </Button>
               <p className="text-xs text-primary-foreground/50 text-center">
                 Daily limit: {wallet?.daily_transfer_limit ? Number(wallet.daily_transfer_limit).toFixed(0) : "1000"} TAU
               </p>
+              <p className="text-xs text-primary-foreground/50 text-center">
+                Min transfer: 3 TAU
+              </p>
             </div>
           </div>
         </motion.div>
+
+        {/* Pending Transfers */}
+        <div className="mb-8">
+          <PendingTransfersSection />
+        </div>
 
         {/* Transaction History */}
         <motion.div
@@ -143,10 +195,10 @@ const WalletPage = () => {
                       }`}
                     >
                       {tx.type === "transfer_in" || tx.type === "earning" ? "+" : "-"}
-                      {Number(tx.amount).toFixed(2)} TAU
+                      {balanceVisible ? Number(tx.amount).toFixed(2) : "••••"} TAU
                     </p>
                     <p className="text-sm text-muted-foreground">
-                      Balance: {Number(tx.balance_after).toFixed(2)}
+                      Balance: {balanceVisible ? Number(tx.balance_after).toFixed(2) : "••••"}
                     </p>
                   </div>
                 </div>
@@ -164,7 +216,7 @@ const WalletPage = () => {
         </motion.div>
       </div>
 
-      <TransferModal open={transferModalOpen} onOpenChange={setTransferModalOpen} />
+      <NewTransferModal open={transferModalOpen} onOpenChange={setTransferModalOpen} />
     </DashboardLayout>
   );
 };

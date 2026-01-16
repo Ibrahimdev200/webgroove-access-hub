@@ -70,7 +70,7 @@ export const VendorSection = () => {
               <span className="text-gradient-tau">Digital Business</span>
             </h2>
             <p className="text-lg text-muted-foreground mb-8 leading-relaxed">
-              Join Webgroove as a verified vendor and reach thousands of tech professionals. 
+              Join Webgrow as a verified vendor and reach thousands of tech professionals. 
               List your tools, services, or training courses and accept TAU payments with 
               seamless settlement.
             </p>
