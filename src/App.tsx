@@ -16,6 +16,8 @@ import VendorDashboardPage from "./pages/VendorDashboardPage";
 import TasksPage from "./pages/TasksPage";
 import SettingsPage from "./pages/SettingsPage";
 import AdminPage from "./pages/AdminPage";
+import BuildPassPage from "./pages/BuildPassPage";
+import BuildEraAdminPage from "./pages/BuildEraAdminPage";
 import AboutPage from "./pages/AboutPage";
 import TermsPage from "./pages/TermsPage";
 import NotFound from "./pages/NotFound";
@@ -42,7 +44,9 @@ const App = () => (
             <Route path="/dashboard/vendor" element={<ProtectedRoute><VendorDashboardPage /></ProtectedRoute>} />
             <Route path="/dashboard/tasks" element={<ProtectedRoute><TasksPage /></ProtectedRoute>} />
             <Route path="/dashboard/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
+            <Route path="/dashboard/build-pass" element={<ProtectedRoute><BuildPassPage /></ProtectedRoute>} />
             <Route path="/dashboard/admin" element={<ProtectedRoute><AdminPage /></ProtectedRoute>} />
+            <Route path="/dashboard/admin/build-era" element={<ProtectedRoute><BuildEraAdminPage /></ProtectedRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
