@@ -19,6 +19,8 @@ import {
   EyeOff,
   Moon,
   Sun,
+  Rocket,
+  Layers,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
@@ -30,6 +32,7 @@ import { NotificationBell } from "@/components/notifications/NotificationBell";
 
 const navItems = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+  { name: "Build Pass", href: "/dashboard/build-pass", icon: Rocket },
   { name: "TAU Wallet", href: "/dashboard/wallet", icon: Wallet },
   { name: "Marketplace", href: "/dashboard/marketplace", icon: ShoppingBag },
   { name: "My Products", href: "/dashboard/products", icon: Package },
@@ -40,6 +43,7 @@ const navItems = [
 
 const adminNavItems = [
   { name: "Admin Panel", href: "/dashboard/admin", icon: Shield },
+  { name: "Build Era Admin", href: "/dashboard/admin/build-era", icon: Layers },
 ];
 
 interface DashboardLayoutProps {
