@@ -113,6 +113,194 @@ export type Database = {
         }
         Relationships: []
       }
+      badges: {
+        Row: {
+          badge_type: Database["public"]["Enums"]["badge_type"]
+          created_at: string
+          description: string | null
+          icon: string | null
+          id: string
+          is_active: boolean
+          name: string
+          tasks_threshold: number | null
+          tau_threshold: number | null
+        }
+        Insert: {
+          badge_type?: Database["public"]["Enums"]["badge_type"]
+          created_at?: string
+          description?: string | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          tasks_threshold?: number | null
+          tau_threshold?: number | null
+        }
+        Update: {
+          badge_type?: Database["public"]["Enums"]["badge_type"]
+          created_at?: string
+          description?: string | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          tasks_threshold?: number | null
+          tau_threshold?: number | null
+        }
+        Relationships: []
+      }
+      build_era_settings: {
+        Row: {
+          id: string
+          setting_key: string
+          setting_value: Json
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          id?: string
+          setting_key: string
+          setting_value: Json
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          id?: string
+          setting_key?: string
+          setting_value?: Json
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
+      build_phases: {
+        Row: {
+          created_at: string
+          description: string | null
+          end_date: string
+          id: string
+          is_active: boolean
+          is_locked: boolean
+          name: string
+          phase_number: number
+          start_date: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          end_date: string
+          id?: string
+          is_active?: boolean
+          is_locked?: boolean
+          name: string
+          phase_number: number
+          start_date: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          end_date?: string
+          id?: string
+          is_active?: boolean
+          is_locked?: boolean
+          name?: string
+          phase_number?: number
+          start_date?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      build_tasks: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          description: string
+          end_date: string
+          id: string
+          is_system_task: boolean
+          max_completions_per_user: number | null
+          max_total_completions: number | null
+          phase_id: string | null
+          requires_approval: boolean
+          start_date: string
+          status: Database["public"]["Enums"]["build_task_status"]
+          task_type: Database["public"]["Enums"]["build_task_type"]
+          tau_reward: number
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          description: string
+          end_date: string
+          id?: string
+          is_system_task?: boolean
+          max_completions_per_user?: number | null
+          max_total_completions?: number | null
+          phase_id?: string | null
+          requires_approval?: boolean
+          start_date: string
+          status?: Database["public"]["Enums"]["build_task_status"]
+          task_type: Database["public"]["Enums"]["build_task_type"]
+          tau_reward: number
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          description?: string
+          end_date?: string
+          id?: string
+          is_system_task?: boolean
+          max_completions_per_user?: number | null
+          max_total_completions?: number | null
+          phase_id?: string | null
+          requires_approval?: boolean
+          start_date?: string
+          status?: Database["public"]["Enums"]["build_task_status"]
+          task_type?: Database["public"]["Enums"]["build_task_type"]
+          tau_reward?: number
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "build_tasks_phase_id_fkey"
+            columns: ["phase_id"]
+            isOneToOne: false
+            referencedRelation: "build_phases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      daily_logins: {
+        Row: {
+          created_at: string
+          id: string
+          login_date: string
+          tau_awarded: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          login_date?: string
+          tau_awarded?: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          login_date?: string
+          tau_awarded?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       marketplace_categories: {
         Row: {
           color: string | null
@@ -360,6 +548,80 @@ export type Database = {
         }
         Relationships: []
       }
+      referral_codes: {
+        Row: {
+          code: string
+          created_at: string
+          id: string
+          is_active: boolean
+          max_uses: number | null
+          tau_per_referral: number
+          user_id: string
+          uses_count: number
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          max_uses?: number | null
+          tau_per_referral?: number
+          user_id: string
+          uses_count?: number
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          max_uses?: number | null
+          tau_per_referral?: number
+          user_id?: string
+          uses_count?: number
+        }
+        Relationships: []
+      }
+      referrals: {
+        Row: {
+          activated_at: string | null
+          created_at: string
+          id: string
+          is_active: boolean
+          referral_code_id: string
+          referred_id: string
+          referrer_id: string
+          tau_awarded_to_referrer: number | null
+        }
+        Insert: {
+          activated_at?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          referral_code_id: string
+          referred_id: string
+          referrer_id: string
+          tau_awarded_to_referrer?: number | null
+        }
+        Update: {
+          activated_at?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          referral_code_id?: string
+          referred_id?: string
+          referrer_id?: string
+          tau_awarded_to_referrer?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "referrals_referral_code_id_fkey"
+            columns: ["referral_code_id"]
+            isOneToOne: false
+            referencedRelation: "referral_codes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       security_questions: {
         Row: {
           created_at: string
@@ -602,6 +864,80 @@ export type Database = {
         }
         Relationships: []
       }
+      user_badges: {
+        Row: {
+          awarded_at: string
+          awarded_by: string | null
+          badge_id: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          awarded_at?: string
+          awarded_by?: string | null
+          badge_id: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          awarded_at?: string
+          awarded_by?: string | null
+          badge_id?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_badges_badge_id_fkey"
+            columns: ["badge_id"]
+            isOneToOne: false
+            referencedRelation: "badges"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_build_stats: {
+        Row: {
+          contribution_score: number
+          created_at: string
+          current_rank: Database["public"]["Enums"]["user_rank"]
+          id: string
+          last_login_date: string | null
+          login_streak: number
+          longest_streak: number
+          tasks_completed: number
+          total_tau_earned: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          contribution_score?: number
+          created_at?: string
+          current_rank?: Database["public"]["Enums"]["user_rank"]
+          id?: string
+          last_login_date?: string | null
+          login_streak?: number
+          longest_streak?: number
+          tasks_completed?: number
+          total_tau_earned?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          contribution_score?: number
+          created_at?: string
+          current_rank?: Database["public"]["Enums"]["user_rank"]
+          id?: string
+          last_login_date?: string | null
+          login_streak?: number
+          longest_streak?: number
+          tasks_completed?: number
+          total_tau_earned?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_notification_reads: {
         Row: {
           announcement_id: string
@@ -687,11 +1023,53 @@ export type Database = {
           },
         ]
       }
+      user_task_completions: {
+        Row: {
+          admin_notes: string | null
+          completed_at: string
+          completion_date: string
+          id: string
+          status: string
+          task_id: string
+          tau_awarded: number
+          user_id: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          completed_at?: string
+          completion_date?: string
+          id?: string
+          status?: string
+          task_id: string
+          tau_awarded: number
+          user_id: string
+        }
+        Update: {
+          admin_notes?: string | null
+          completed_at?: string
+          completion_date?: string
+          id?: string
+          status?: string
+          task_id?: string
+          tau_awarded?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_task_completions_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "build_tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      claim_daily_login: { Args: never; Returns: Json }
       execute_transfer: {
         Args: {
           p_amount: number
@@ -702,6 +1080,7 @@ export type Database = {
         }
         Returns: Json
       }
+      generate_referral_code: { Args: never; Returns: string }
       generate_security_phrase: { Args: never; Returns: string }
       has_role: {
         Args: {
@@ -713,6 +1092,14 @@ export type Database = {
     }
     Enums: {
       app_role: "standard" | "developer" | "creator" | "vendor" | "admin"
+      badge_type: "auto" | "admin_approved"
+      build_task_status:
+        | "draft"
+        | "scheduled"
+        | "active"
+        | "inactive"
+        | "expired"
+      build_task_type: "daily" | "weekly" | "seasonal" | "special"
       order_status: "pending" | "completed" | "refunded" | "cancelled"
       payment_method: "tau" | "card"
       product_status: "draft" | "pending" | "active" | "inactive"
@@ -729,6 +1116,12 @@ export type Database = {
         | "transfer_out"
         | "earning"
         | "refund"
+      user_rank:
+        | "explorer"
+        | "builder"
+        | "architect"
+        | "pioneer"
+        | "founder_circle"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -857,6 +1250,15 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["standard", "developer", "creator", "vendor", "admin"],
+      badge_type: ["auto", "admin_approved"],
+      build_task_status: [
+        "draft",
+        "scheduled",
+        "active",
+        "inactive",
+        "expired",
+      ],
+      build_task_type: ["daily", "weekly", "seasonal", "special"],
       order_status: ["pending", "completed", "refunded", "cancelled"],
       payment_method: ["tau", "card"],
       product_status: ["draft", "pending", "active", "inactive"],
@@ -874,6 +1276,13 @@ export const Constants = {
         "transfer_out",
         "earning",
         "refund",
+      ],
+      user_rank: [
+        "explorer",
+        "builder",
+        "architect",
+        "pioneer",
+        "founder_circle",
       ],
     },
   },
