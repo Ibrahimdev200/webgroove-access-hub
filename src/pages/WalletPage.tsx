@@ -18,6 +18,7 @@ import { Button } from "@/components/ui/button";
 import { useWallet, useTransactions } from "@/hooks/useWallet";
 import { NewTransferModal } from "@/components/wallet/NewTransferModal";
 import { PendingTransfersSection } from "@/components/wallet/PendingTransfersSection";
+import { TauConverter } from "@/components/wallet/TauConverter";
 import { useToast } from "@/hooks/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/contexts/AuthContext";
@@ -140,8 +141,9 @@ const WalletPage = () => {
           </div>
         </motion.div>
 
-        {/* Pending Transfers */}
-        <div className="mb-8">
+        {/* TAU Converter & Pending Transfers */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          <TauConverter />
           <PendingTransfersSection />
         </div>
 
